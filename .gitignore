@@ -9,3 +9,5 @@
 *.idea
 /gitversion
 windows.log
+debug
+.vscode

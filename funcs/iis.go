@@ -9,11 +9,12 @@ import (
 
 func in_array_iis(a string, array []*g.WebsiteConfig) bool {
 	for _, v := range array {
-		if v.Regex != nil {
-			return v.Regex.MatchString(a)
-			// return true
+		if v.Regex != nil && v.Regex.MatchString(a) {
+			return true
 		}
-		return v.Value == a
+		if v.Value == a {
+			return true
+		}
 	}
 	return false
 }

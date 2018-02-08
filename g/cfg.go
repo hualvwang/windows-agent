@@ -4,10 +4,17 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/toolkits/file"
 )
+
+type WebsiteConfig struct {
+	Regex *regexp.Regexp
+	Value string
+}
 
 type MsSQLConfig struct {
 	Enabled  bool     `json:"enabled"`
@@ -21,7 +28,8 @@ type MsSQLConfig struct {
 
 type IIsConfig struct {
 	Enabled  bool     `json:"enabled"`
-	Websites []string `json:"websites"`
+	Names    []string `json:"websites"`
+	Websites []*WebsiteConfig
 }
 
 type HeartbeatConfig struct {
@@ -129,5 +137,21 @@ func ParseConfig(cfg string) {
 
 	config = &c
 
+	websites := config.IIs.Websites
+	for _, v := range config.IIs.Names {
+		if strings.HasPrefix(v, "@") {
+			v = strings.TrimPrefix(v, "@")
+			r, err := regexp.Compile(v)
+			if err == nil {
+				websites = append(websites, &WebsiteConfig{Regex: r})
+			} else {
+				log.Println("parse regex:", v, "failed", err)
+			}
+		} else {
+			websites = append(websites, &WebsiteConfig{Value: v})
+		}
+	}
+	websites = append(websites, &WebsiteConfig{Value: "_Total"})
+	config.IIs.Websites = websites
 	log.Println("read config file:", cfg, "successfully")
 }

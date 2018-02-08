@@ -123,7 +123,8 @@ MsSQL
 	"iis":{
 		"enabled": false,
 		"websites": [
-	        "Default Web Site" //web 的站点，可以留空，默认会采集_Total的
+	        "Default Web Site", //web 的站点，可以留空，默认会采集_Total的
+	        "@example.com$" //支持站点名正则匹配，以@作为前缀
 	    ]
  	}, 
 	"mssql":{

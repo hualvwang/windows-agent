@@ -7,11 +7,13 @@ import (
 	"github.com/open-falcon/common/model"
 )
 
-func in_array_iis(a string, array []string) bool {
+func in_array_iis(a string, array []*g.WebsiteConfig) bool {
 	for _, v := range array {
-		if a == v {
-			return true
+		if v.Regex != nil {
+			return v.Regex.MatchString(a)
+			// return true
 		}
+		return v.Value == a
 	}
 	return false
 }
@@ -22,8 +24,6 @@ func iisMetrics() (L []*model.MetricValue) {
 		return
 	}
 	websites := g.Config().IIs.Websites
-
-	websites = append(websites, "_Total")
 	IIsStat, err := IIsCounters()
 	if err != nil {
 		g.Logger().Println(err)
